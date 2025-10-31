@@ -1,0 +1,493 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TenantStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum SMSStatus {
+  PENDING
+  SENT
+  FAILED
+  DELIVERED
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Tenant {
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  legalName           String?
+  registrationNumber  String?
+  timezone            String?              @default("Africa/Nairobi")
+  currency            String?              @default("KES")
+  createdAt           DateTime             @default(now()) @db.Timestamptz(6)
+  createdBy           String?              @db.Uuid
+  updatedAt           DateTime?            @db.Timestamptz(6)
+  updatedBy           String?              @db.Uuid
+  enabled             Boolean              @default(true)
+  monthlyCharge       Decimal?             @db.Decimal(12, 2)
+  email               String?
+  phoneNumber         String?
+  alternativePhone    String?
+  county              String?
+  town                String?
+  address             String?
+  building            String?
+  street              String?
+  website             String?
+  logoUrl             String?
+  status              TenantStatus         @default(ACTIVE)
+
+  // Relations
+  adjustments         Adjustment[]
+  billTypes           BillType[]
+  bills               Bill[]
+  customerRates       CustomerRate[]
+  payments            Payment[]
+  schemes             BillingScheme[]
+  emailLogs           EmailLog[]
+  notifications       Notification[]
+  smsLogs             SmsLog[]
+  templates           Template[]
+  settings            Setting[]
+  systemParameters    SystemParameter[]
+  users               User[]
+  addresses           Address[]
+  customers           Customer[]
+  meters              Meter[]
+  
+  walletAccounts      WalletAccount[]
+  walletTransactions  WalletTransaction[]
+  mpesaC2BTransactions MPESAC2BTransaction[]
+  smsConfigs          SMSConfig[]
+  auditLogs           AuditLog[]
+  smsMessages         SMS[]
+  mpesaConfigs        MPESAConfig[]
+  connections         Connection[]
+
+  Scheme Scheme[]
+
+  TariffCategory TariffCategory[]
+}
+
+// ✅ Core Models
+model Adjustment {
+  id        Int     @id @default(autoincrement())
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  Customer Customer[]
+}
+
+model WalletTransaction {
+  id        String  @id @default(uuid()) @db.Uuid
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model WalletAccount {
+  id        String  @id @default(uuid()) @db.Uuid
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  Customer Customer[]
+}
+
+
+model Scheme {
+  id        Int      @id @default(autoincrement())
+  name      String
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  zones     Zone[]   // one scheme has many zones
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Zone {
+  id        Int      @id @default(autoincrement())
+  name      String
+  
+  schemeId  Int
+  scheme    Scheme   @relation(fields: [schemeId], references: [id])
+  routes    Route[]  // one zone has many routes
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Route {
+  id        Int      @id @default(autoincrement())
+  name      String
+  code      String?  // optional unique identifier
+  zoneId    Int
+  zone      Zone     @relation(fields: [zoneId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Address {
+  id        Int     @id @default(autoincrement())
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  Customer Customer[]
+}
+
+// ✅ User System
+model User {
+  id                 Int          @id @default(autoincrement())
+  tenantId           Int
+  tenant             Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  username           String
+  email              String?
+  phone              String?
+  firstName          String
+  lastName           String
+  phoneNumber        String       @unique
+  gender             String?
+  role               String[]
+  password           String
+  status             UserStatus
+  lastLogin          DateTime?
+  loginCount         Int          @default(0)
+  otpAttempts        Int          @default(0)
+  resetCode          String?
+  resetCodeExpiresAt DateTime?
+  auditLogs          AuditLog[]
+  notifications      Notification[]
+  createdAt          DateTime     @default(now()) @db.Timestamptz(6)
+  createdBy          Int?
+  updatedAt          DateTime?    @db.Timestamptz(6)
+  updatedBy          Int?
+}
+
+// ✅ Customer Model
+model Customer {
+  id                   String             @id @default(uuid()) @db.Uuid
+  accountNumber        String
+  customerName         String            @db.VarChar(500)
+
+  email                String?
+  phoneNumber          String
+  status               customerStatus     @default(NEW)
+  createdAt            DateTime           @default(now()) @db.Timestamptz(6)
+  createdBy            Int?           
+  updatedAt            DateTime?          @db.Timestamptz(6)
+  updatedBy            Int?
+  customerSchemeId     Int?            
+  customerZoneId       Int?            
+  customerRouteId      Int?            
+  customerKraPin       String?            @db.VarChar(30)
+  customerDob          DateTime?          @db.Date
+  customerDeposit      Decimal?           @db.Decimal(18, 2)
+  customerTariffId     String?            @db.Uuid
+  customerDiscoType    String?            @db.VarChar
+  customerIdNo         String?            @db.VarChar
+  hasSewer             Boolean            @default(false)
+  hasWater             Boolean            @default(true)
+  tenantId             Int
+  tariffCategoryId           String?  @db.Uuid
+  tariffCategory   TariffCategory? @relation(fields: [tariffCategoryId], references: [id])
+
+
+  // Relations
+  adjustments          Adjustment[]
+  bills                Bill[] @relation("BillCustomer")
+  payments             Payment[]
+  notifications        Notification[]
+  addresses            Address[]
+  connections          Connection[]
+   
+  tenant               Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  walletAccounts       WalletAccount[]
+
+  @@unique([tenantId, accountNumber], map: "customer_account_unique_per_tenant")
+  @@index([tenantId], map: "idx_customers_tenant")
+  //@@schema("Customer")
+  MeterReading MeterReading[]
+}
+enum customerStatus {
+  ACTIVE
+  NEW
+  DORMANT
+}
+model TariffCategory {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String
+  tenantId  Int
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  blocks    TariffBlock[]
+  customers Customer[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("tariff_categories")
+}
+
+model TariffBlock {
+  id          Int      @id @default(autoincrement())
+  categoryId  String   @db.Uuid
+  category    TariffCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  minVolume   Float
+  maxVolume   Float?
+  ratePerUnit Float
+}
+
+
+// ✅ Metering
+model Meter {
+  id               Int              @id @default(autoincrement())
+  serialNumber     String
+  model            String?
+  installationDate DateTime?        @db.Date
+  lastInspectedAt  DateTime?        @db.Date
+  status           String?          @default("installed")
+  meta             Json?            @default("{}")
+  createdAt        DateTime         @default(now()) @db.Timestamptz(6)
+  meterSize        Decimal?         @db.Decimal(18, 2)
+  tenantId         Int
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  meterReadings    MeterReading[]
+  connectionId     Int?             @unique
+  connection       Connection?      @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+}
+
+model Connection {
+  id             Int       @id @default(autoincrement())
+  connectionNumber  Int
+  customerId String? @db.Uuid
+customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  tenantId       Int
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+ 
+  status         connectionStatus @default(ACTIVE)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+  meter          Meter?
+
+  @@index([customerId])
+  @@index([tenantId])
+}
+enum connectionStatus {
+  ACTIVE
+  DISCONNECTED
+}
+model MeterReading {
+  id              String       @id @default(uuid()) @db.Uuid
+  meterId         Int
+  meter           Meter        @relation(fields: [meterId], references: [id], onDelete: Cascade)
+  customer        Customer?    @relation(fields: [customerId], references: [id])
+  customerId      String?      @db.Uuid
+  previousReading Decimal?     @db.Decimal(18, 2)
+  currentReading  Decimal      @db.Decimal(18, 2)
+  consumption     Decimal?     @db.Decimal(18, 2) // <--- new field
+  readingDate     DateTime     @default(now()) @db.Timestamptz(6)
+  recordedBy      Int
+  notes           String?      @db.VarChar(255)
+  status          ReadingType  @default(NORMAL)
+  
+  createdAt       DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime?    @db.Timestamptz(6)
+
+  @@index([meterId], map: "idx_meter_readings_meter")
+}
+
+enum ReadingType {
+  NORMAL
+  ABNORMAL
+}
+
+
+// ✅ Communication Models
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId  Int
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  Customer Customer[]
+}
+
+model SMS {
+  id          Int        @id @default(autoincrement())
+  tenantId    Int
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  clientSmsId String     @unique
+  mobile      String
+  message     String
+  status      SMSStatus
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// ✅ M-Pesa Config & Transactions
+model MPESAConfig {
+  tenantId            Int      @unique
+  tenant              Tenant   @relation(fields: [tenantId], references: [id])
+  b2cShortCode        String   @unique
+  initiatorName       String
+  securityCredential  String
+  consumerKey         String
+  consumerSecret      String
+  name                String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  mpesaC2BTransactions MPESAC2BTransaction[]
+}
+
+model MPESAC2BTransaction {
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      Int
+  transId       String      @unique
+  transTime     DateTime
+  shortCode     String
+  transAmount   Float
+  billRefNumber String
+  msisdn        String
+  firstName     String
+  processed     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  mpesaConfig   MPESAConfig @relation(fields: [shortCode], references: [b2cShortCode], onDelete: Cascade)
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// ✅ Audit / Config / Logs
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  tenantId    Int
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  action      String
+  resource    String
+  details     Json
+  createdAt   DateTime @default(now())
+}
+
+model SMSConfig {
+  id                         Int      @id @default(autoincrement())
+  tenantId                   Int      @unique
+  partnerId                  String
+  apiKey                     String
+  shortCode                  String
+  customerSupportPhoneNumber String
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+  tenant                     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model SystemParameter {
+  id        Int     @id @default(autoincrement())
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Setting {
+  id        Int     @id @default(autoincrement())
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Template {
+  id        String  @id @default(uuid()) @db.Uuid
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model SmsLog {
+  id        Int     @id @default(autoincrement())
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model EmailLog {
+  id        Int     @id @default(autoincrement())
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model BillingScheme {
+  id        Int     @id @default(autoincrement())
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id        String  @id @default(uuid()) @db.Uuid
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  Customer Customer[]
+}
+
+model CustomerRate {
+  id        Int     @id @default(autoincrement())
+  tenantId  Int
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+
+model Bill {
+  id              String        @id @default(uuid()) @db.Uuid
+  tenantId        Int
+  billPeriod      DateTime
+  billNumber      String        @unique
+  billAmount      Float
+  closingBalance  Float
+  status          InvoiceStatus @default(UNPAID)
+  typeid          Int?
+  type            BillType?     @relation(fields: [typeid], references: [id])
+  isSystemGenerated Boolean
+  createdAt       DateTime      @default(now())
+  amountPaid      Float         @default(0)
+  customerId      String        @db.Uuid
+  customer        Customer      @relation("BillCustomer", fields: [customerId], references: [id], onDelete: Cascade)
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  items           BillItem[]
+}
+
+model BillItem {
+  id          String  @id @default(uuid()) @db.Uuid
+  billId      String  @db.Uuid     // ✅ must match Bill.id type
+  description String
+  amount      Float
+  quantity    Int
+  bill        Bill    @relation(fields: [billId], references: [id], onDelete: Cascade)
+}
+
+model BillType {
+  id       Int      @id @default(autoincrement())
+  tenantId Int
+  name     String
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  Bill     Bill[]
+}
+
+
+
+enum InvoiceStatus {
+  UNPAID
+  PAID
+  PARTIALLY_PAID
+  CANCELLED
+}
+
+
+
+
+
+
