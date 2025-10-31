@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMeter = void 0;
-const globalPrisma_1 = __importDefault(require("@/globalPrisma"));
+const globalPrisma_1 = __importDefault(require("../../globalPrisma"));
 // ✅ Create Meter
 const createMeter = async (req, res, next) => {
     const { tenantId } = req.user;

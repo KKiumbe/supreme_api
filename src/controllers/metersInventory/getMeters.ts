@@ -1,7 +1,6 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "../../middleware/verifyToken";
-import prisma from "@/globalPrisma";
-
+import prisma from '../../globalPrisma'
 import { GetMetersQuery, GetMetersResponse, MeterResponse } from "./types";
 
 export const getMeters = async (

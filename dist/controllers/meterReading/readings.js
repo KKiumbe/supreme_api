@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMeterReading = exports.updateMeterReading = exports.getMeterReadingById = exports.getMeterAbnormalReadings = exports.getMeterReadings = exports.createMeterReading = void 0;
-const globalPrisma_1 = __importDefault(require("@/globalPrisma"));
+const globalPrisma_1 = __importDefault(require("../../globalPrisma"));
 const library_1 = require("@prisma/client/runtime/library");
 /**
  * @desc Create a new meter reading

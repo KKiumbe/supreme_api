@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resetPassword = exports.verifyOTP = exports.requestOTP = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const globalPrisma_1 = __importDefault(require("@/globalPrisma"));
+const globalPrisma_1 = __importDefault(require("../../globalPrisma"));
 const sms_1 = require("../sms/sms");
 const requestOTP = async (req, res, next) => {
     const { phoneNumber } = req.body;

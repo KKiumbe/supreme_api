@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCustomer = void 0;
-const globalPrisma_1 = __importDefault(require("@/globalPrisma"));
+const globalPrisma_1 = __importDefault(require("../../globalPrisma"));
 // Create Customer Controller
 const createCustomer = async (req, res, next) => {
     try {

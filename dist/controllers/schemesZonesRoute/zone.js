@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRoutesByZoneId = exports.createZone = void 0;
-const globalPrisma_1 = __importDefault(require("@/globalPrisma"));
+const globalPrisma_1 = __importDefault(require("../../globalPrisma"));
 // Controller
 const createZone = async (req, res, next) => {
     try {

@@ -7,7 +7,7 @@ exports.signin = exports.register = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const globalPrisma_1 = __importDefault(require("@/globalPrisma"));
+const globalPrisma_1 = __importDefault(require("./../../globalPrisma"));
 dotenv_1.default.config();
 const roles_1 = __importDefault(require("./roles"));
 // 2. Main register function

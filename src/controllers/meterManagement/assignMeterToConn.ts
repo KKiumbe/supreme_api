@@ -1,7 +1,6 @@
 
 import { NextFunction, Response } from "express";
-import prisma from "@/globalPrisma";
-
+import prisma from '../../globalPrisma'
 import { AuthenticatedRequest } from "../../middleware/verifyToken";
 // Assign a meter to a connection
 export const assignMeterToConnection = async (

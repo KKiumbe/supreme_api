@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../../middleware/verifyToken';
-import prisma from "@/globalPrisma";
+import prisma from '../../globalPrisma'
 
 export const createScheme = async (
   req: AuthenticatedRequest,

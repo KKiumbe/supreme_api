@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadTariffExcel = exports.uploadTariffExcelMiddleware = void 0;
 const multer_1 = __importDefault(require("multer"));
 const xlsx_1 = __importDefault(require("xlsx"));
-const globalPrisma_1 = __importDefault(require("@/globalPrisma"));
+const globalPrisma_1 = __importDefault(require("../../globalPrisma"));
 // Configure multer for file upload
 const upload = (0, multer_1.default)({ dest: 'uploads/' });
 // Middleware export for routes
