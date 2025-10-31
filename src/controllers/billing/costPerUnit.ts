@@ -1,5 +1,5 @@
 // src/helpers/getTariffCostPerUnit.ts
-import prisma from "../../../globalPrisma";
+import prisma from "../../globalPrisma";
 
 /**
  * Returns the tariff block and rate per unit based on the customer's tariff category and consumption.

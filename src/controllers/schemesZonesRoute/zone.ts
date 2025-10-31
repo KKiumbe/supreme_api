@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../../middleware/verifyToken';
 
-import prisma from '../../../globalPrisma'
+import prisma from "@/globalPrisma";
 // Types
 interface CreateZoneBody {
   name: string;

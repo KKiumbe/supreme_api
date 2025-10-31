@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import prisma from '../../../globalPrisma';
+import prisma from "@/globalPrisma";
+
 import { AuthenticatedRequest } from '../../middleware/verifyToken';
 
 // ✅ Create Meter

@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 
+import prisma from "@/globalPrisma";
 
-import prisma from '../../../globalPrisma';
 dotenv.config();
 import type { Request, Response } from 'express';
 

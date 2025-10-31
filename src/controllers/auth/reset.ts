@@ -2,7 +2,8 @@
 import type { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import prisma from '../../../globalPrisma';
+import prisma from "@/globalPrisma";
+
 import { sendSMS } from '../sms/sms';
 
 

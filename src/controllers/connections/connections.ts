@@ -1,5 +1,6 @@
 import { Response, NextFunction } from "express";
-import prisma from "../../../globalPrisma";
+import prisma from "@/globalPrisma";
+
 import { Prisma } from "@prisma/client";
 import { AuthenticatedRequest } from "../../middleware/verifyToken";
 

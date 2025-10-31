@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import XLSX from 'xlsx';
 import { AuthenticatedRequest } from '../../middleware/verifyToken';
-import prisma from '../../../globalPrisma';
+import prisma from "@/globalPrisma";
 
 
 // Configure multer for file upload

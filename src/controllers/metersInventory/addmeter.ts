@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthenticatedRequest } from "../../middleware/verifyToken";
 import { CreateMeterInput } from "./types";
-import prisma from "../../../globalPrisma";
+import prisma from "../../globalPrisma";
 
 export const createMeter = async (
   req: AuthenticatedRequest,

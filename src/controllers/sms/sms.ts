@@ -4,7 +4,7 @@ import axios, { type AxiosResponse } from 'axios';
 ;
 import { v4 as uuidv4 } from 'uuid';
 
-import prisma from '../../../globalPrisma';
+import prisma from '../../globalPrisma';
 
 
 import type { AuthenticatedRequest } from '../../middleware/verifyToken';
