@@ -23,10 +23,11 @@ app.use(express.json());
 // ✅ Configure CORS properly
 app.use(
   cors({
-    origin: 'http://localhost:5173', // your frontend URL
-    credentials: true,               // allow cookies / authorization headers
+    origin: true, // allows any origin
+    credentials: true,
   })
 );
+
 
 app.use('/api', authRoutes);
 app.use('/api', metersRoutes);

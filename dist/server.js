@@ -22,8 +22,8 @@ app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 // ✅ Configure CORS properly
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:5173', // your frontend URL
-    credentials: true, // allow cookies / authorization headers
+    origin: true, // allows any origin
+    credentials: true,
 }));
 app.use('/api', userRoute_1.default);
 app.use('/api', inventory_1.default);
