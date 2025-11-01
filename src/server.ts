@@ -22,32 +22,27 @@ app.use(express.json());
 
 
 
-
-
-const allowedOrigins = [
-  'https://frolicking-speculoos-9c49e3.netlify.app'
-];
+const allowedOrigins = ['https://frolicking-speculoos-9c49e3.netlify.app'];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like Postman)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-        return callback(new Error(msg), false);
+      if (!allowedOrigins.includes(origin)) {
+        return callback(new Error('CORS Not Allowed'), false);
       }
       return callback(null, true);
     },
-    credentials: true, // allows cookies/auth headers
+    credentials: true,
   })
 );
 
-// Preflight for all routes
-app.options('*', cors({
+// Preflight requests for all routes
+app.options('/*', cors({
   origin: allowedOrigins,
   credentials: true,
 }));
+
 
 
 
