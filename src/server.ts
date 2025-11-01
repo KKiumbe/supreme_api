@@ -34,7 +34,6 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   })
 );
-app.options('*', cors());
 
 // Routes
 app.use('/api', authRoutes);
