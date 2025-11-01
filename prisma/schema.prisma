@@ -4,8 +4,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://kevin:MyNia2208%23%40%21@localhost:5432/supreme?connection_limit=40"
 }
+
 
 enum TenantStatus {
   ACTIVE
