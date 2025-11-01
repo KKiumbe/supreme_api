@@ -21,16 +21,20 @@ app.use(express.json());
 
 const allowedOrigins = ['https://frolicking-speculoos-9c49e3.netlify.app'];
 
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow Postman or server-to-server requests
-      if (!allowedOrigins.includes(origin)) {
-        return callback(new Error('CORS Not Allowed'), false);
+      if (!origin) return callback(null, true); // allows non-browser requests (Postman)
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('Not allowed by CORS'));
       }
-      return callback(null, true);
     },
-    credentials: true,
+    credentials: true, // <-- required for cookies/auth
+    methods: ['GET','POST','PUT','DELETE','OPTIONS'], // allow these methods
+    allowedHeaders: ['Content-Type','Authorization'], // headers your frontend sends
   })
 );
 
